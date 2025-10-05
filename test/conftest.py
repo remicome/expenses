@@ -1,7 +1,7 @@
 import random
 
 import pytest
-from bookkeeper.definitions import Member, Transaction
+from expenses.definitions import Member, Transaction
 
 
 @pytest.fixture()
