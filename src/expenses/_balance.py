@@ -1,12 +1,11 @@
 import typing
 
-from ._member import Member
-from ._transaction import Transaction
+from ._expense import Expense
 
 
 def balance(transactions: typing.List[Transaction]) -> typing.Mapping[Member, float]:
     """Compute each member's balance."""
-    balances: typing.Dict[Member, float] = {}
+    balances: typing.Dict[str, float] = {}
 
     for transaction in transactions:
         balances[transaction.payer] = (
