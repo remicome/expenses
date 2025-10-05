@@ -1,0 +1,50 @@
+# ==============================================================================
+#
+# Construit et teste le paquet python
+#
+# ==============================================================================
+
+name: Build and test
+
+on: 
+  pull_request:
+    branches: ["master", "develop"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12  # Latest stable release
+      - name: Build
+        run: |
+          python -m pip install build
+          python -m build -so dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: dist/*.tar.gz
+          retention-days: 7
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12  # Latest stable release
+      - uses: actions/download-artifact@v5
+        with:
+          name: package
+          path: dist
+      - name: Install the package
+        run: |
+          export PACKAGE=$(ls dist/*.tar.gz)
+          python -m pip install $PACKAGE[test]
+      - name: Test
+        run: pytest
