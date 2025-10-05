@@ -1,16 +1,27 @@
-from __future__ import annotations
+"""Calcul des virements nécessaires au rééquilibrage."""
 
-import dataclasses
-import typing
+import enum
+
+import pandas as pd
 
 from ._expense import Expense
 
 
-def settle(expenses: typing.List[Expense]) -> typing.List[Paiement]:
-    """Settle a set of expense by issuing a list of paiements to be made.
+class _Transfer(enum.StrEnum):
+    """Variables descriptives d'un virement."""
 
-    This is the algorithm used by splittypie: the person with the lowest balance pays
-    all it cans to the one with the highest balance, until we reach equilibrium.
+    origin = "émetteur"
+    destination = "destinataire"
+    amount = "montant"
+
+
+def settle(expenses: list[Expense]) -> pd.DataFrame:
+    """
+    Détermine les transferts à effectuer pour équilibrer une liste de dépenses.
+
+    L'algorithme utilisé est celui de Splittypie : la personne ayant la dette la plus
+    grande envers le groupe paie celle qui a la créance la plus élevée, et ainsi de
+    suite jusqu'à ce que toutes les dettes soient soldées.
     """
     paiements = []
     debts = _individual_debts(expenses)
@@ -19,24 +30,22 @@ def settle(expenses: typing.List[Expense]) -> typing.List[Paiement]:
         member_with_lowest_balance = min(debts, key=lambda k: debts[k])
         member_with_highest_balance = max(debts, key=lambda k: debts[k])
 
-        lowest_balance = debts[member_with_lowest_balance]
-        highest_balance = debts[member_with_highest_balance]
-        if lowest_balance > 0 or highest_balance < 0:
-            raise RuntimeError
-
-        paiement_value = min(-lowest_balance, highest_balance)
+        paiement_value = _largest_possible_transfer(
+            origin=debts[member_with_lowest_balance],
+            destination=debts[member_with_highest_balance],
+        )
 
         paiements.append(
-            Paiement(
-                sender=member_with_lowest_balance,
-                recipient=member_with_highest_balance,
-                value=paiement_value,
-            )
+            {
+                _Transfer.origin: member_with_lowest_balance,
+                _Transfer.destination: member_with_highest_balance,
+                _Transfer.amount: paiement_value,
+            }
         )
         debts[member_with_lowest_balance] += paiement_value
         debts[member_with_highest_balance] -= paiement_value
 
-    return paiements
+    return pd.DataFrame(paiements)
 
 
 def _individual_debts(expenses: list[Expense]) -> dict[str, float]:
@@ -56,7 +65,7 @@ def _individual_debts(expenses: list[Expense]) -> dict[str, float]:
             * La dette de Bob est de 25€ (100€ - 25€).
             * La dette d'Alice est de -25€ (75€ - 100€).
     """
-    balances: typing.Dict[str, float] = {}
+    balances: str[str, float] = {}
 
     for expense in expenses:
         balances[expense.who_paid] = balances.get(expense.who_paid, 0) + expense.amount
@@ -69,27 +78,21 @@ def _individual_debts(expenses: list[Expense]) -> dict[str, float]:
     return balances
 
 
-@dataclasses.dataclass(repr=False)
-class Paiement:
-    """A paiement to be issued.
-
-    Args:
-        * sender: issuer of the paiement
-        * recipient: recipient of the paiement
-        * value: currency value of the paiement
+def _largest_possible_transfer(origin: float, destination: float) -> float:
     """
+    Calcule le montant du plus grand transfert possible entre deux personnes.
 
-    sender: str
-    recipient: str
-    value: float
+    ``origin`` représente une dette (de signe négatif), ``destination`` une créance
+    (de signe positif). Le montant calculé est le plus grand possible qui puisse
+    être payé par la personne endetté, sans dépassé le montant que doit recevoir le
+    détenteur de la créance.
+    """
+    return min(-origin, destination)
 
-    def __repr__(self) -> str:
-        return f"{self.sender} owes {self.value:.2f} to {self.recipient}."
 
-
-def _exists_positive(balances: typing.Mapping) -> bool:
+def _exists_positive(balances: dict) -> bool:
     return any(value > 0 for value in balances.values())
 
 
-def _exists_negative(balances: typing.Mapping) -> bool:
+def _exists_negative(balances: dict) -> bool:
     return any(value < 0 for value in balances.values())
