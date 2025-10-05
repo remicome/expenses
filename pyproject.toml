@@ -1,11 +1,15 @@
 [project]
-name = "bookkeeper"
-version = "0.0.0"
-description = "Bookkeeping for group trips."
+name = "expenses"
+description = "Gestion de dépenses partagées entre ami⋅es"
 authors = [
     {name = "Rémi Côme", email ="remi.come@gmx.com"},
 ]
+dynamic = ["version"]
 
 [project.optional-dependencies]
 test = ["pytest"]
 dev = ["black", "flake8", "isort"]
+
+[build-system]
+requires = ["setuptools", "setuptools-scm[simple]"]
+build-backend = "setuptools.build_meta"

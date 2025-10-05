@@ -1,5 +1,5 @@
-from bookkeeper.balance import balance
-from bookkeeper.definitions import Member, Transaction
+from expenses.balance import balance
+from expenses.definitions import Member, Transaction
 
 
 def test_balance():

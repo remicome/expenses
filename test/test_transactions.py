@@ -1,4 +1,4 @@
-from bookkeeper.definitions import Discount, Food, Housing, Member
+from expenses.definitions import Discount, Food, Housing, Member
 
 
 def test_food():
