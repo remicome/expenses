@@ -34,3 +34,33 @@ def test_positive_amounts(expenses: list[Expense]) -> None:
     transfers = settle(expenses)
     is_positive = transfers["montant"] > 0
     assert is_positive.all()
+
+
+def test_simple_settlement(expenses: list[Expense]) -> None:
+    """
+    Vérifie le calcul sur un exemple simple.
+
+    Ici Rémi engage 100€ au nom de François et lui-même. Le groupe a donc engagé 50€
+    pour chaque membre : Rémi est en excédent de 50€ et François en déficit de 50€.
+
+    Le rééquilibrage doit donc constituer en un unique virement de François à Rémi.
+    """
+    remi = "Rémi"
+    francois = "François"
+
+    expenses = [
+        Expense(
+            amount=100,
+            who_paid=remi,
+            who_for=[remi, francois],
+        )
+    ]
+    transfers = settle(expenses)
+    assert len(transfers) == 1
+
+    transfer = transfers.iloc[0].to_dict()
+    assert transfer == {
+        "émetteur": francois,
+        "destinataire": remi,
+        "montant": 50,
+    }
