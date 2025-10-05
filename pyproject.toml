@@ -5,6 +5,9 @@ authors = [
     {name = "Rémi Côme", email ="remi.come@gmx.com"},
 ]
 dynamic = ["version"]
+dependencies = [
+    "pydantic",
+]
 
 [project.optional-dependencies]
 test = ["pytest"]
