@@ -23,29 +23,29 @@ def settle(expenses: list[Expense]) -> pd.DataFrame:
     grande envers le groupe paie celle qui a la créance la plus élevée, et ainsi de
     suite jusqu'à ce que toutes les dettes soient soldées.
     """
-    paiements = []
+    transfers = []
     debts = _individual_debts(expenses)
 
     while _exists_positive(debts) and _exists_negative(debts):
         member_with_lowest_balance = min(debts, key=lambda k: debts[k])
         member_with_highest_balance = max(debts, key=lambda k: debts[k])
 
-        paiement_value = _largest_possible_transfer(
+        transfer_amount = _largest_possible_transfer(
             origin=debts[member_with_lowest_balance],
             destination=debts[member_with_highest_balance],
         )
 
-        paiements.append(
+        transfers.append(
             {
                 _Transfer.origin: member_with_lowest_balance,
                 _Transfer.destination: member_with_highest_balance,
-                _Transfer.amount: paiement_value,
+                _Transfer.amount: transfer_amount,
             }
         )
-        debts[member_with_lowest_balance] += paiement_value
-        debts[member_with_highest_balance] -= paiement_value
+        debts[member_with_lowest_balance] += transfer_amount
+        debts[member_with_highest_balance] -= transfer_amount
 
-    return pd.DataFrame(paiements)
+    return pd.DataFrame(transfers)
 
 
 def _individual_debts(expenses: list[Expense]) -> dict[str, float]:
@@ -90,9 +90,11 @@ def _largest_possible_transfer(origin: float, destination: float) -> float:
     return min(-origin, destination)
 
 
-def _exists_positive(balances: dict) -> bool:
-    return any(value > 0 for value in balances.values())
+def _exists_positive(mapping: dict) -> bool:
+    """Retourne True si le dictionnaire contient une valeur positive."""
+    return any(value > 0 for value in mapping.values())
 
 
-def _exists_negative(balances: dict) -> bool:
-    return any(value < 0 for value in balances.values())
+def _exists_negative(mapping: dict) -> bool:
+    """Retourne True si le dictionnaire contient une valeur négative."""
+    return any(value < 0 for value in mapping.values())
