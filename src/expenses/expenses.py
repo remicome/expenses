@@ -43,6 +43,9 @@ class Expenses:
         Returns:
             Un DataFrame qui donne les virement à effectuer pour parvenir à l'équilibre.
         """
+        if len(self) == 0:
+            return pd.DataFrame(columns=list(_Transfer))
+
         members = list(self.members)
         return pd.DataFrame(
             [

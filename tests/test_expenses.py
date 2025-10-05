@@ -52,3 +52,17 @@ def test_settlement() -> None:
 
     expected_columns = {"émetteur", "destinataire", "montant"}
     assert set(settlement.columns) == set(expected_columns)
+
+
+def test_settlement_no_expense() -> None:
+    """
+    Teste le rééquilibrage d'une liste vide.
+
+    La fonction doit alors retourner un DataFrame vide.
+    """
+    expenses = Expenses()
+    settlement = expenses.settle()
+
+    assert len(settlement) == 0
+    expected_columns = {"émetteur", "destinataire", "montant"}
+    assert set(settlement.columns) == set(expected_columns)
