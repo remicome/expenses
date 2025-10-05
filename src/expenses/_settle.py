@@ -22,6 +22,13 @@ def settle(expenses: list[Expense]) -> pd.DataFrame:
     L'algorithme utilisé est celui de Splittypie : la personne ayant la dette la plus
     grande envers le groupe paie celle qui a la créance la plus élevée, et ainsi de
     suite jusqu'à ce que toutes les dettes soient soldées.
+
+    Args:
+        expenses: une liste de dépenses engagées par le groupe.
+
+    Returns:
+        Un DataFrame décrivant l'ensemble des virements à réaliser pour assurer
+        l'équilibre.
     """
     if len(expenses) == 0:
         return pd.DataFrame(columns=list(_Transfer))

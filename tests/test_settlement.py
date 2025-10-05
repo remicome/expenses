@@ -24,6 +24,13 @@ def test_empty_list() -> None:
 
     Le rééquilibrage d'une liste vide doit retourner un DataFrame vide.
     """
-    expenses = []
+    expenses: list[Expense] = []
     settlement = settle(expenses)
     assert len(settlement) == 0
+
+
+def test_positive_amounts(expenses: list[Expense]) -> None:
+    """Teste que le montant de chaque virement est positif."""
+    transfers = settle(expenses)
+    is_positive = transfers["montant"] > 0
+    assert is_positive.all()
