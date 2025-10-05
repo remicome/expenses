@@ -1,26 +1,20 @@
+"""Fixtures communes aux différents modules de test."""
+
 import random
 
 import pytest
-from expenses.definitions import Member, Transaction
+from expenses._expense import Expense
 
 
-@pytest.fixture()
-def transactions(members):
-    """a list of random transactions."""
+@pytest.fixture
+def expenses() -> list[Expense]:
+    """Une liste de dépenses aléatoires."""
+    members = ["Rémi", "François", "Sophie"]
     return [
-        Transaction(
-            value=random.randint(0, 10),
-            payer=random.choice(members),
-            members=random.sample(members, k=random.randint(1, len(members))),
+        Expense(
+            amount=random.randint(1, 100),
+            who_paid=random.choice(members),
+            who_for=random.sample(members, k=2),
         )
         for _ in range(10)
-    ]
-
-
-@pytest.fixture()
-def members():
-    return [
-        Member(name="first"),
-        Member(name="second"),
-        Member(name="third"),
     ]

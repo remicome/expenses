@@ -5,10 +5,14 @@ authors = [
     {name = "Rémi Côme", email ="remi.come@gmx.com"},
 ]
 dynamic = ["version"]
+dependencies = [
+    "pandas",
+    "pydantic",
+]
 
 [project.optional-dependencies]
 test = ["pytest"]
-dev = ["black", "flake8", "isort"]
+dev = ["ruff", "isort"]
 
 [build-system]
 requires = ["setuptools", "setuptools-scm[simple]"]
