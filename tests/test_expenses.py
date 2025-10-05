@@ -15,3 +15,19 @@ def test_add_expense() -> None:
         label="logement",
     )
     assert len(expenses) == 1
+
+
+def test_members() -> None:
+    """
+    Teste la liste des membres.
+
+    La liste des membres doit coïncider avec celle définie par les dépenses.
+    """
+    expenses = Expenses()
+    members = ["Rémi", "Sophie", "François"]
+    expenses.append(
+        2000,
+        who_paid=members[0],
+        who_for=members[1:],
+    )
+    assert set(expenses.members) == set(members)

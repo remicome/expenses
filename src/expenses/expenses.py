@@ -36,3 +36,11 @@ class Expenses:
     def __len__(self) -> int:
         """Retourne le nombre de dépenses."""
         return len(self._expenses)
+
+    @property
+    def members(self) -> set[str]:
+        """Retourne la liste des membres impliqués dans les dépenses."""
+        members = (
+            {expense.who_paid} | set(expense.who_for) for expense in self._expenses
+        )
+        return set.union(*members)
