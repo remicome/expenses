@@ -2,6 +2,9 @@
 
 import dataclasses
 import datetime
+import enum
+
+import pandas as pd
 
 from ._expense import Expense
 
@@ -44,3 +47,29 @@ class Expenses:
             {expense.who_paid} | set(expense.who_for) for expense in self._expenses
         )
         return set.union(*members)
+
+    def settle(self) -> pd.DataFrame:
+        """
+        Équilibre les dépenses.
+
+        Returns:
+            Un DataFrame qui donne les virement à effectuer pour parvenir à l'équilibre.
+        """
+        members = list(self.members)
+        return pd.DataFrame(
+            [
+                {
+                    _Transfer.origin: [members[0]],
+                    _Transfer.destination: [members[1]],
+                    _Transfer.amount: 0,
+                }
+            ]
+        )
+
+
+class _Transfer(enum.StrEnum):
+    """Variables descriptives d'un virement."""
+
+    origin = "émetteur"
+    destination = "destinataire"
+    amount = "montant"

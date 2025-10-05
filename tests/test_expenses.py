@@ -36,6 +36,9 @@ def test_members() -> None:
 def test_settlement() -> None:
     """
     Teste l'interface du rééquilibrage des dépenses.
+
+    La fonction settle doit retourner un DataFrame avec trois colonnes : "émetteur",
+    "destinataire", "montant".
     """
     expenses = Expenses()
     expenses.append(
@@ -44,4 +47,8 @@ def test_settlement() -> None:
         who_for=["Sophie", "François"],
     )
     settlement = expenses.settle()
-    assert settlement is not None
+
+    assert len(settlement) > 0
+
+    expected_columns = {"émetteur", "destinataire", "montant"}
+    assert set(settlement.columns) == set(expected_columns)
