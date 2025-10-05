@@ -31,3 +31,17 @@ def test_members() -> None:
         who_for=members[1:],
     )
     assert set(expenses.members) == set(members)
+
+
+def test_settlement() -> None:
+    """
+    Teste l'interface du rééquilibrage des dépenses.
+    """
+    expenses = Expenses()
+    expenses.append(
+        10,
+        who_paid="Rémi",
+        who_for=["Sophie", "François"],
+    )
+    settlement = expenses.settle()
+    assert settlement is not None
