@@ -8,7 +8,7 @@ dynamic = ["version"]
 
 [project.optional-dependencies]
 test = ["pytest"]
-dev = ["black", "flake8", "isort"]
+dev = ["ruff", "isort"]
 
 [build-system]
 requires = ["setuptools", "setuptools-scm[simple]"]
