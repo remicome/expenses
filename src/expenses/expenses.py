@@ -2,11 +2,11 @@
 
 import dataclasses
 import datetime
-import enum
 
 import pandas as pd
 
 from ._expense import Expense
+from ._settle import settle
 
 
 @dataclasses.dataclass
@@ -43,19 +43,7 @@ class Expenses:
         Returns:
             Un DataFrame qui donne les virement à effectuer pour parvenir à l'équilibre.
         """
-        if len(self) == 0:
-            return pd.DataFrame(columns=list(_Transfer))
-
-        members = list(self.members)
-        return pd.DataFrame(
-            [
-                {
-                    _Transfer.origin: [members[0]],
-                    _Transfer.destination: [members[1]],
-                    _Transfer.amount: 0,
-                }
-            ]
-        )
+        return settle(self._expenses)
 
     @property
     def members(self) -> set[str]:
@@ -73,11 +61,3 @@ class Expenses:
     def __len__(self) -> int:
         """Retourne le nombre de dépenses."""
         return len(self._expenses)
-
-
-class _Transfer(enum.StrEnum):
-    """Variables descriptives d'un virement."""
-
-    origin = "émetteur"
-    destination = "destinataire"
-    amount = "montant"
