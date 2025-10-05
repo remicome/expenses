@@ -36,18 +36,6 @@ class Expenses:
             )
         )
 
-    def __len__(self) -> int:
-        """Retourne le nombre de dépenses."""
-        return len(self._expenses)
-
-    @property
-    def members(self) -> set[str]:
-        """Retourne la liste des membres impliqués dans les dépenses."""
-        members = (
-            {expense.who_paid} | set(expense.who_for) for expense in self._expenses
-        )
-        return set.union(*members)
-
     def settle(self) -> pd.DataFrame:
         """
         Équilibre les dépenses.
@@ -65,6 +53,23 @@ class Expenses:
                 }
             ]
         )
+
+    @property
+    def members(self) -> set[str]:
+        """
+        Retourne l'ensemble des membres impliqués dans les dépenses.
+
+        Returns:
+            L'ensemble des membres trouvés dans les dépenses entrées jusqu'à présent.
+        """
+        members = (
+            {expense.who_paid} | set(expense.who_for) for expense in self._expenses
+        )
+        return set.union(*members)
+
+    def __len__(self) -> int:
+        """Retourne le nombre de dépenses."""
+        return len(self._expenses)
 
 
 class _Transfer(enum.StrEnum):
