@@ -154,9 +154,8 @@ class Expenses:
             raise ValueError(message)
 
         weight_labels = set(weights.keys()) - {"membre"}
-        unknown_labels = weight_labels - self.labels
-        if unknown_labels:
-            message = (
-                f"Étiquettes inconnues dans les données de poids : {unknown_labels}."
-            )
+        no_label = self.labels - weight_labels
+        if no_label:
+            message = f"Poids manquants : {no_label}."
+
             raise ValueError(message)
