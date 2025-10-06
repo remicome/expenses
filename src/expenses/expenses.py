@@ -128,6 +128,10 @@ class Expenses:
         """Retourne le nombre de dépenses."""
         return len(self.expenses)
 
+    def __iter__(self) -> typing.Iterable[Expense]:
+        """Itère sur la liste des dépenses."""
+        yield from self.expenses
+
     def _validate_weights(self, weights: dict) -> None:
         """Valide les données de poids."""
         if not weights:
