@@ -29,14 +29,14 @@ class Expense(pydantic.BaseModel):
     who_paid: str
     who_for: list[str]
     description: str = ""
-    when: datetime.datetime = pydantic.Field(default_factory=datetime.datetime.now)
+    when: datetime.date = pydantic.Field(default_factory=datetime.date.today)
     label: str | None = None
 
     @pydantic.field_validator("when", mode="before")
     @classmethod
-    def cast_datetime(cls, when: datetime.datetime | str | None) -> datetime.datetime:
+    def cast_datetime(cls, when: datetime.date | str | None) -> datetime.date | str:
         """Convertit la date donnée."""
         if when is None:
-            return datetime.datetime.now()
+            return datetime.date.today()
 
         return when

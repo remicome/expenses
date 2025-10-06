@@ -17,3 +17,6 @@ dev = ["ruff", "isort"]
 [build-system]
 requires = ["setuptools", "setuptools-scm[simple]"]
 build-backend = "setuptools.build_meta"
+
+[tool.isort]
+known_first_party = ["expenses"]
