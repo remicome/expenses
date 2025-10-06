@@ -24,7 +24,7 @@ class Expenses:
     """
 
     expenses: list[Expense] = dataclasses.field(default_factory=list)
-    weights: pd.DataFrame = dataclasses.field(default_factory=pd.DataFrame)
+    weights: dict = dataclasses.field(default_factory=dict)
 
     def __post_init__(self) -> None:
         """Vérifie la validité des poids donnés."""
@@ -78,7 +78,8 @@ class Expenses:
             ValueError: si la colonne membre n'est pas présente, ou si un poids défini
             par le fichier ne correspond pas à une étiquette connue.
         """
-        weights = pd.read_csv(path, sep=";", decimal=",")
+        weights_df = pd.read_csv(path, sep=";", decimal=",")
+        weights = weights_df.set_index("membre").to_dict()
         return dataclasses.replace(self, weights=weights)
 
     @property
@@ -108,12 +109,13 @@ class Expenses:
         """Retourne le nombre de dépenses."""
         return len(self.expenses)
 
-    def _validate_weights(self, weights: pd.DataFrame) -> None:
+    def _validate_weights(self, weights: dict) -> None:
         """Valide les données de poids."""
-        if len(weights) == 0:
+        if not weights:
             return
 
-        weight_members = set(weights.membre)
+        all_members = (set(value.keys()) for value in weights.values())
+        weight_members = set.union(*all_members)
         extra_members = weight_members - self.members
         if extra_members:
             message = (
@@ -128,7 +130,7 @@ class Expenses:
             )
             raise ValueError(message)
 
-        weight_labels = set(weights.columns) - {"membre"}
+        weight_labels = set(weights.keys()) - {"membre"}
         unknown_labels = weight_labels - self.labels
         if unknown_labels:
             message = (
