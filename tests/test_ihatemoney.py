@@ -70,7 +70,7 @@ def ihatemoney_file(expenses: Expenses) -> typing.Iterator[pathlib.Path]:
     )
     with tempfile.TemporaryDirectory() as directory:
         destination = pathlib.Path(directory) / "ihatemoney.csv"
-        expenses.to_csv(destination, sep=";", index=False)
+        expenses.to_csv(destination, sep=",", index=False)
         yield destination
 
 
@@ -96,5 +96,5 @@ def ihatemoney_file_with_labels(expenses: Expenses) -> typing.Iterator[pathlib.P
     )
     with tempfile.TemporaryDirectory() as directory:
         destination = pathlib.Path(directory) / "ihatemoney.csv"
-        expenses.to_csv(destination, sep=";", index=False)
+        expenses.to_csv(destination, sep=",", index=False)
         yield destination

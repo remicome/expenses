@@ -22,7 +22,7 @@ def read_ihatemoney_csv(path: os.PathLike) -> list[Expense]:
         "owers": str,
         "label": str,
     }
-    df = pd.read_csv(path, sep=";", dtype=dtype)
+    df = pd.read_csv(path, sep=",", dtype=dtype)
 
     if "label" not in df:
         df["label"] = None
