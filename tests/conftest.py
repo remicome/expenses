@@ -8,7 +8,7 @@ import typing
 import pandas as pd
 import pytest
 from expenses import Expenses
-from expenses._expense import Expense
+from expenses.expense import Expense
 
 
 @pytest.fixture

@@ -4,7 +4,7 @@ import enum
 
 import pandas as pd
 
-from ._expense import Expense
+from .expense import Expense
 
 
 class _Transfer(enum.StrEnum):

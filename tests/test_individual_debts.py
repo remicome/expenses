@@ -1,7 +1,7 @@
 """Teste la fonction qui calule les dettes de chacun à l'égard du groupe."""
 
-from expenses._expense import Expense
 from expenses._settle import _individual_debts
+from expenses.expense import Expense
 
 
 def test_debts() -> None:

@@ -8,8 +8,8 @@ import os
 
 import pandas as pd
 
-from ._expense import Expense
 from ._settle import settle
+from .expense import Expense
 
 
 @dataclasses.dataclass

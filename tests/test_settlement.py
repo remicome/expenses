@@ -1,7 +1,7 @@
 """Teste le calcul du rééquilibrage."""
 
-from expenses._expense import Expense
 from expenses._settle import settle
+from expenses.expense import Expense
 
 
 def test_format(expense_list: list[Expense]) -> None:
