@@ -59,7 +59,7 @@ class Expenses:
         who_paid: str,
         who_for: list[str],
         description: str = "",
-        when: datetime.datetime | str | None = None,
+        when: datetime.date | str | None = None,
         label: str | None = None,
     ) -> None:
         """Ajoute une dépense à la liste."""
