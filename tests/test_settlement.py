@@ -64,3 +64,37 @@ def test_simple_settlement() -> None:
         "destinataire": remi,
         "montant": 50,
     }
+
+
+def test_weighted_settlement() -> None:
+    """
+    Vérifie un calcul simple avec des poids.
+
+    Rémi engage 100€ au nom de François et lui-même, sur une dépense à répartir sous la
+    forme 75% - 25%. François doit donc 25€ au groupe, tandis que Rémi est en excédent
+    de 25€.
+
+    Le rééquilibrage doit donc constituer en un unique virement de François à Rémi.
+    """
+    remi = "Rémi"
+    francois = "François"
+    label = "logement"
+
+    expenses = [
+        Expense(
+            amount=100,
+            who_paid=remi,
+            who_for=[remi, francois],
+            label=label,
+        )
+    ]
+    weights = {label: {remi: 75, francois: 25}}
+    transfers = settle(expenses, weights=weights)
+    assert len(transfers) == 1
+
+    transfer = transfers.iloc[0].to_dict()
+    assert transfer == {
+        "émetteur": francois,
+        "destinataire": remi,
+        "montant": 25,
+    }

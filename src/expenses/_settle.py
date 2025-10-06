@@ -15,7 +15,7 @@ class _Transfer(enum.StrEnum):
     amount = "montant"
 
 
-def settle(expenses: list[Expense]) -> pd.DataFrame:
+def settle(expenses: list[Expense], weights: dict | None = None) -> pd.DataFrame:
     """
     Détermine les transferts à effectuer pour équilibrer une liste de dépenses.
 
@@ -25,6 +25,9 @@ def settle(expenses: list[Expense]) -> pd.DataFrame:
 
     Args:
         expenses: une liste de dépenses engagées par le groupe.
+        weights: un dictionnaire optionnel de poids. Celui-ci est au format
+
+            {label: {membre1: poids1, membre1: poids1,...}, ...}
 
     Returns:
         Un DataFrame décrivant l'ensemble des virements à réaliser pour assurer
@@ -34,7 +37,7 @@ def settle(expenses: list[Expense]) -> pd.DataFrame:
         return pd.DataFrame(columns=list(_Transfer))
 
     transfers = []
-    debts = _individual_debts(expenses)
+    debts = _individual_debts(expenses, weights=weights)
 
     while _exists_positive(debts) and _exists_negative(debts):
         member_with_lowest_balance = min(debts, key=lambda k: debts[k])
@@ -58,7 +61,10 @@ def settle(expenses: list[Expense]) -> pd.DataFrame:
     return pd.DataFrame(transfers)
 
 
-def _individual_debts(expenses: list[Expense]) -> dict[str, float]:
+def _individual_debts(
+    expenses: list[Expense],
+    weights: dict | None = None,
+) -> dict[str, float]:
     """
     Calcule la dette de chaque membre envers le groupe.
 
@@ -73,19 +79,35 @@ def _individual_debts(expenses: list[Expense]) -> dict[str, float]:
 
             * Le groupe a engagé 75€ de dépense pour chacun de ses membres.
             * La dette de Bob est de 25€ (100€ - 25€).
+
+    Args:
+        expenses: une liste de dépenses engagées par le groupe.
+        weights: un dictionnaire optionnel de poids à affecter aux dépenses d'un certain
+            type. Celui-ci est au format
+
+            {label: {membre1: poids1, membre1: poids1,...}, ...}
             * La dette d'Alice est de -25€ (75€ - 100€).
     """
-    balances: str[str, float] = {}
+    balances: dict[str, float] = {}
+    weights = weights if weights else {}
 
     for expense in expenses:
         balances[expense.who_paid] = balances.get(expense.who_paid, 0) + expense.amount
 
+        expense_weights = _weights_for_label(expense, weights=weights)
+        total_weight = sum(expense_weights.values(), start=0)
         for member in expense.who_for:
             # La somme engagée est divisée équitablement entre les membres impliqués
-            debt = expense.amount / len(expense.who_for)
+            debt = expense.amount * expense_weights.get(member, 0) / total_weight
             balances[member] = balances.get(member, 0) - debt
 
     return balances
+
+
+def _weights_for_label(expense: Expense, weights: dict) -> dict:
+    """Retourne les poids associés à une dépense de ce type."""
+    default_weights = {member: 1 for member in expense.who_for}
+    return weights.get(expense.label, default_weights)
 
 
 def _largest_possible_transfer(origin: float, destination: float) -> float:
