@@ -3,6 +3,7 @@
 import pathlib
 
 import pytest
+
 from expenses import Expenses
 
 
@@ -70,6 +71,25 @@ def test_settlement() -> None:
 
     expected_columns = {"émetteur", "destinataire", "montant"}
     assert set(settlement.columns) == set(expected_columns)
+
+
+def test_statement() -> None:
+    """
+    Teste l'interface calculant le bilan.
+
+    La fonction settle doit retourner une série non-nulle dont les valeurs sommes à
+    zéro.
+    """
+    expenses = Expenses()
+    expenses.append(
+        10,
+        who_paid="Rémi",
+        who_for=["Sophie", "François"],
+    )
+    statement = expenses.statement()
+
+    assert len(statement) > 0
+    assert statement.sum() == 0
 
 
 def test_settlement_no_expense() -> None:

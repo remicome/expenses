@@ -1,6 +1,6 @@
 """Teste la fonction qui calule les dettes de chacun à l'égard du groupe."""
 
-from expenses._settle import _individual_balances
+from expenses._settle import individual_balances
 from expenses.expense import Expense
 
 
@@ -21,7 +21,7 @@ def test_debts() -> None:
             who_for=[remi, francois],
         )
     ]
-    debts = _individual_balances(expenses)
+    debts = individual_balances(expenses)
     assert debts[remi] == 50 and debts[francois] == -50
 
 
@@ -46,12 +46,12 @@ def test_weighted_debts() -> None:
         )
     ]
     weights = {label: {remi: 75, francois: 25}}
-    debts = _individual_balances(expenses, weights=weights)
+    debts = individual_balances(expenses, weights=weights)
     assert debts[remi] == 25 and debts[francois] == -25
 
 
 def test_sum_of_debts(expense_list: list[Expense]) -> None:
     """La somme des dettes est zéro par définition."""
 
-    debts = _individual_balances(expense_list)
+    debts = individual_balances(expense_list)
     assert sum(debts.values()) == 0

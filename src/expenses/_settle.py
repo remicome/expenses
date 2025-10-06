@@ -37,7 +37,7 @@ def settle(expenses: list[Expense], weights: dict | None = None) -> pd.DataFrame
         return pd.DataFrame(columns=list(_Transfer))
 
     transfers = []
-    balances = _individual_balances(expenses, weights=weights)
+    balances = individual_balances(expenses, weights=weights)
 
     while _exists_positive(balances) and _exists_negative(balances):
         member_with_lowest_balance = min(balances, key=lambda k: balances[k])
@@ -61,7 +61,7 @@ def settle(expenses: list[Expense], weights: dict | None = None) -> pd.DataFrame
     return pd.DataFrame(transfers)
 
 
-def _individual_balances(
+def individual_balances(
     expenses: list[Expense],
     weights: dict | None = None,
 ) -> dict[str, float]:
