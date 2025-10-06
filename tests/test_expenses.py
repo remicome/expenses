@@ -2,6 +2,7 @@
 
 import pathlib
 
+import pytest
 from expenses import Expenses
 
 
@@ -43,6 +44,11 @@ def test_weights_from_csv(expenses: Expenses, weight_file: pathlib.Path) -> None
     """
     weighted_expenses = expenses.with_weights(weight_file)
     assert len(weighted_expenses) == len(expenses)
+
+
+def test_invalid_weights(expenses: Expenses, invalid_weight_file: pathlib.Path) -> None:
+    with pytest.raises(ValueError, match="invalide"):
+        expenses.with_weights(invalid_weight_file)
 
 
 def test_settlement() -> None:

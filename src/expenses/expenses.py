@@ -26,6 +26,14 @@ class Expenses:
     expenses: list[Expense] = dataclasses.field(default_factory=list)
     weights: pd.DataFrame = dataclasses.field(default_factory=pd.DataFrame)
 
+    def __post_init__(self) -> None:
+        """Vérifie la validité des poids donnés."""
+        try:
+            self._validate_weights(self.weights)
+        except ValueError as exception:
+            message = "Données de poids invalide."
+            raise ValueError(message) from exception
+
     def append(
         self,
         amount: float,
@@ -86,6 +94,44 @@ class Expenses:
         )
         return set.union(*members)
 
+    @property
+    def labels(self) -> set[str]:
+        """
+        Retourne l'ensemble des étiquettes définies par les dépenses.
+
+        Returns:
+            L'ensemble des étiquettes trouvés dans les dépenses entrées jusqu'à présent.
+        """
+        return {expense.label for expense in self.expenses if expense.label}
+
     def __len__(self) -> int:
         """Retourne le nombre de dépenses."""
         return len(self.expenses)
+
+    def _validate_weights(self, weights: pd.DataFrame) -> None:
+        """Valide les données de poids."""
+        if len(weights) == 0:
+            return
+
+        weight_members = set(weights.membre)
+        extra_members = weight_members - self.members
+        if extra_members:
+            message = (
+                f"Les poids sont donnés pour des membres inconnus : {extra_members}."
+            )
+            raise ValueError(message)
+
+        missing_members = self.members - weight_members
+        if missing_members:
+            message = (
+                f"Les poids pour ces membres ne sont pas définis : {missing_members}."
+            )
+            raise ValueError(message)
+
+        weight_labels = set(weights.columns) - {"membre"}
+        unknown_labels = weight_labels - self.labels
+        if unknown_labels:
+            message = (
+                f"Étiquettes inconnues dans les données de poids : {unknown_labels}."
+            )
+            raise ValueError(message)
