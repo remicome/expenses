@@ -10,36 +10,50 @@ import pytest
 from expenses import Expenses
 
 
-def test_import(ihatemoney_file: pathlib.Path) -> None:
+def test_import(original_expenses: Expenses, ihatemoney_file: pathlib.Path) -> None:
     """Teste l'import."""
 
-    expenses = Expenses.from_ihatemoney(ihatemoney_file)
-    assert len(expenses) > 0
+    imported_expenses = Expenses.from_ihatemoney(ihatemoney_file)
+    assert all(
+        imported_expense == original_expense
+        for imported_expense, original_expense in zip(
+            imported_expenses, original_expenses
+        )
+    )
 
 
 @pytest.fixture
-def ihatemoney_file() -> typing.Iterator[pathlib.Path]:
+def original_expenses(expenses: Expenses) -> Expenses:
+    """
+    La liste des dépenses enregistrées à travers I Hate Money
+
+    Il s'agit de la liste telle quelle, à laquelle on retire les étiquettes.
+    """
+    return Expenses(
+        [expense.model_copy(update={"label": None}) for expense in expenses]
+    )
+
+
+@pytest.fixture
+def ihatemoney_file(expenses: Expenses) -> typing.Iterator[pathlib.Path]:
     """
     Un fichier de dépense au format exporté par I Hate Money.
 
     On ne conserve que les colonnes effectivement utilisées.
     """
-    remi = "Rémi"
-    francois = "François"
-    sophie = "Sophie"
-
     expenses = pd.DataFrame(
         [
             {
-                "what": "gite",
-                "amount": 1000,
-                "date": "2025-01-01",
-                "payer_name": remi,
-                "owers": f"{remi}, {francois}, {sophie}",
+                "what": expense.description,
+                "amount": expense.amount,
+                "date": expense.when.strftime("%Y-%m-%d"),
+                "payer_name": expense.who_paid,
+                "owers": ",".join(expense.who_for),
             }
+            for expense in expenses
         ]
     )
     with tempfile.TemporaryDirectory() as directory:
         destination = pathlib.Path(directory) / "ihatemoney.csv"
-        expenses.to_csv(destination, sep=";")
+        expenses.to_csv(destination, sep=";", index=False)
         yield destination
