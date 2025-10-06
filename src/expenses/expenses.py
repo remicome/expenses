@@ -5,9 +5,11 @@ from __future__ import annotations
 import dataclasses
 import datetime
 import os
+import typing
 
 import pandas as pd
 
+from ._ihatemoney import read_ihatemoney_csv
 from ._settle import settle
 from .expense import Expense
 
@@ -33,6 +35,23 @@ class Expenses:
         except ValueError as exception:
             message = "Données de poids invalide."
             raise ValueError(message) from exception
+
+    @classmethod
+    def from_ihatemoney(cls: type[typing.Self], path: os.PathLike) -> typing.Self:
+        """
+        Importe des dépenses depuis un export de I Hate Money
+
+        Source:
+            https://ihatemoney.org
+
+        Args:
+            path: chemin vers un fichier CSV tel qu'exporté par I Hate Money.
+
+        Returns:
+            Une liste de dépenses.
+        """
+        expenses = read_ihatemoney_csv(path)
+        return cls(expenses)
 
     def append(
         self,
