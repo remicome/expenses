@@ -81,7 +81,8 @@ class Expenses:
         Returns:
             Un DataFrame qui donne les virement à effectuer pour parvenir à l'équilibre.
         """
-        return settle(self.expenses, weights=self.weights)
+        settlement = settle(self.expenses, weights=self.weights)
+        return settlement.sort_values(by="émetteur")
 
     def statement(self) -> pd.Series:
         """
@@ -93,7 +94,8 @@ class Expenses:
             de l'argent.
         """
         statement = individual_statements(self.expenses, weights=self.weights)
-        return pd.Series(statement)
+        statement = pd.Series(statement)
+        return statement.sort_index()
 
     def with_weights(self, path: os.PathLike) -> Expenses:
         """
