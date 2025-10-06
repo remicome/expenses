@@ -7,6 +7,7 @@ import typing
 
 import pandas as pd
 import pytest
+
 from expenses import Expenses
 from expenses.expense import Expense
 
@@ -44,9 +45,12 @@ def weight_file(weights: pd.DataFrame) -> typing.Iterator[pathlib.Path]:
 
 
 @pytest.fixture
-def invalid_weight_file(weights: pd.DataFrame) -> typing.Iterator[pathlib.Path]:
+def invalid_weight_file(
+    weights: pd.DataFrame,
+    labels: list,
+) -> typing.Iterator[pathlib.Path]:
     """Chemin vers un fichier de poids qui ne correspond pas aux dépenses."""
-    weights["invalid_label"] = 1
+    weights = weights.rename({labels[-1]: "invalid"}, axis=1)
     with tempfile.TemporaryDirectory() as directory:
         destination = pathlib.Path(directory) / "weights.csv"
         weights.to_csv(destination, sep=";", decimal=",", index=False)
