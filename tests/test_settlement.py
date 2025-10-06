@@ -4,14 +4,14 @@ from expenses._expense import Expense
 from expenses._settle import settle
 
 
-def test_format(expenses: list[Expense]) -> None:
+def test_format(expense_list: list[Expense]) -> None:
     """
     Teste le format de sortie.
 
     La fonction de rééquilibrage retourne un DataFrame avec trois colonnes décrivant les
     virements : "émetteur", "destinataire", "montant" (dans cet ordre).
     """
-    settlement = settle(expenses)
+    settlement = settle(expense_list)
     assert len(settlement) > 0
 
     expected_columns = ["émetteur", "destinataire", "montant"]
@@ -29,14 +29,14 @@ def test_empty_list() -> None:
     assert len(settlement) == 0
 
 
-def test_positive_amounts(expenses: list[Expense]) -> None:
+def test_positive_amounts(expense_list: list[Expense]) -> None:
     """Teste que le montant de chaque virement est positif."""
-    transfers = settle(expenses)
+    transfers = settle(expense_list)
     is_positive = transfers["montant"] > 0
     assert is_positive.all()
 
 
-def test_simple_settlement(expenses: list[Expense]) -> None:
+def test_simple_settlement() -> None:
     """
     Vérifie le calcul sur un exemple simple.
 

@@ -3,11 +3,21 @@
 import random
 
 import pytest
+from expenses import Expenses
 from expenses._expense import Expense
 
 
 @pytest.fixture
-def expenses() -> list[Expense]:
+def expenses(expense_list: list[Expense]) -> Expense:
+    """Une liste de dépenses aléatoires."""
+    expenses = Expenses()
+    for expense in expense_list:
+        expenses.append(**dict(expense))
+    return expenses
+
+
+@pytest.fixture
+def expense_list() -> list[Expense]:
     """Une liste de dépenses aléatoires."""
     members = ["Rémi", "François", "Sophie"]
     return [

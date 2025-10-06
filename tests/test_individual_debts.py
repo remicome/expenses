@@ -25,8 +25,8 @@ def test_debts() -> None:
     assert debts[remi] == 50 and debts[francois] == -50
 
 
-def test_sum_of_debts(expenses: list[Expense]) -> None:
+def test_sum_of_debts(expense_list: list[Expense]) -> None:
     """La somme des dettes est zéro par définition."""
 
-    debts = _individual_debts(expenses)
+    debts = _individual_debts(expense_list)
     assert sum(debts.values()) == 0
