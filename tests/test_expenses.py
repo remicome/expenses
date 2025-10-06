@@ -1,5 +1,7 @@
 """Tests de l'interface principale."""
 
+import pathlib
+
 from expenses import Expenses
 
 
@@ -31,6 +33,16 @@ def test_members() -> None:
         who_for=members[1:],
     )
     assert set(expenses.members) == set(members)
+
+
+def test_weights_from_csv(expenses: Expenses, weight_file: pathlib.Path) -> None:
+    """
+    Teste l'ajout de poids depuis un CSV.
+
+    Les poids doivent être ajoutés sans erreur, un objet de même longueur est retourné.
+    """
+    weighted_expenses = expenses.with_weights(weight_file)
+    assert len(weighted_expenses) == len(expenses)
 
 
 def test_settlement() -> None:
