@@ -42,4 +42,4 @@ def read_ihatemoney_csv(path: os.PathLike) -> list[Expense]:
 
 def _who_for(owers: str) -> list[str]:
     """Extrait la liste des débiteur à partir d'une chaîne de caractère."""
-    return owers.split(",")
+    return [ower.strip() for ower in owers.split(",")]
