@@ -62,7 +62,7 @@ class Expenses:
         Returns:
             Un DataFrame qui donne les virement à effectuer pour parvenir à l'équilibre.
         """
-        return settle(self.expenses)
+        return settle(self.expenses, weights=self.weights)
 
     def with_weights(self, path: os.PathLike) -> Expenses:
         """
