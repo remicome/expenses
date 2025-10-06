@@ -10,7 +10,7 @@ import typing
 import pandas as pd
 
 from ._ihatemoney import read_ihatemoney_csv
-from ._settle import settle
+from ._settle import individual_statements, settle
 from .expense import Expense
 
 
@@ -82,6 +82,18 @@ class Expenses:
             Un DataFrame qui donne les virement à effectuer pour parvenir à l'équilibre.
         """
         return settle(self.expenses, weights=self.weights)
+
+    def statement(self) -> pd.Series:
+        """
+        Calcule le bilan de chaque membre du groupe.
+
+        Returns:
+            Une série donnant le bilan de chaque membre. Si ce dernier est négatif,
+            le membre doit de l'argent au groupe ; s'il est positif, le groupe lui doit
+            de l'argent.
+        """
+        statement = individual_statements(self.expenses, weights=self.weights)
+        return pd.Series(statement)
 
     def with_weights(self, path: os.PathLike) -> Expenses:
         """
