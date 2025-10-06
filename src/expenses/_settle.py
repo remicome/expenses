@@ -37,15 +37,15 @@ def settle(expenses: list[Expense], weights: dict | None = None) -> pd.DataFrame
         return pd.DataFrame(columns=list(_Transfer))
 
     transfers = []
-    debts = _individual_debts(expenses, weights=weights)
+    balances = _individual_balances(expenses, weights=weights)
 
-    while _exists_positive(debts) and _exists_negative(debts):
-        member_with_lowest_balance = min(debts, key=lambda k: debts[k])
-        member_with_highest_balance = max(debts, key=lambda k: debts[k])
+    while _exists_positive(balances) and _exists_negative(balances):
+        member_with_lowest_balance = min(balances, key=lambda k: balances[k])
+        member_with_highest_balance = max(balances, key=lambda k: balances[k])
 
         transfer_amount = _largest_possible_transfer(
-            origin=debts[member_with_lowest_balance],
-            destination=debts[member_with_highest_balance],
+            origin=balances[member_with_lowest_balance],
+            destination=balances[member_with_highest_balance],
         )
 
         transfers.append(
@@ -55,30 +55,30 @@ def settle(expenses: list[Expense], weights: dict | None = None) -> pd.DataFrame
                 _Transfer.amount: transfer_amount,
             }
         )
-        debts[member_with_lowest_balance] += transfer_amount
-        debts[member_with_highest_balance] -= transfer_amount
+        balances[member_with_lowest_balance] += transfer_amount
+        balances[member_with_highest_balance] -= transfer_amount
 
     return pd.DataFrame(transfers)
 
 
-def _individual_debts(
+def _individual_balances(
     expenses: list[Expense],
     weights: dict | None = None,
 ) -> dict[str, float]:
     """
-    Calcule la dette de chaque membre envers le groupe.
+    Calcule le bilan de chaque membre.
 
-    La dette d'un membre est l'ensemble des dépenses engagées en son nom (à l'actif du
-    groupe), auquel on soustrait l'argent effectivement déboursé par ce membre (au
-    passif du groupe). L'actif étant égal au passif, la somme des dette doit être de
-    zéro.
+    Le bilan d'un membre est l'argent dépensé par un membre du groupe (au passif du
+    groupe), auquel on soustrait l'ensemble des dépenses engagées en son nom (à l'actif
+    du groupe) L'actif étant égal au passif, la somme des bilans doit être de zéro.
 
     Exemple:
         Alice paie 100€ pour le groupe constitué d'Alice et Bob. Bob paie 50€ pour Alice
         et Bob. Alors :
 
             * Le groupe a engagé 75€ de dépense pour chacun de ses membres.
-            * La dette de Bob est de 25€ (100€ - 25€).
+            * Le bilan d'Alice est de 25€ (100€ - 75€)
+            * Le bilan de Bob est de -25€ (50€ - 75€).
 
     Args:
         expenses: une liste de dépenses engagées par le groupe.
@@ -87,6 +87,9 @@ def _individual_debts(
 
             {label: {membre1: poids1, membre1: poids1,...}, ...}
             * La dette d'Alice est de -25€ (75€ - 100€).
+
+    Returns:
+        Un dictionnaire donnant la dette pour chaque membre du groupe.
     """
     balances: dict[str, float] = {}
     weights = weights if weights else {}
