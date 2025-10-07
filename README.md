@@ -33,10 +33,9 @@ expenses = Expenses.from_ihatemoney("dépenses.csv").with_weights("poids.csv")
 ```
 
 ## Comment l'installer ?
-Depuis les sources :
+Installer la [dernière release](https://github.com/remicome/expenses/releases/latest/) :
 ```bash
-git clone https://github.com/remicome/expenses.git
-pip install expenses
+pip install https://github.com/remicome/expenses/releases/download/v1.0.0/expenses-1.0.0.tar.gz
 ```
 
 ## Comment l'utiliser ?
