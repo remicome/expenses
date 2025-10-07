@@ -1,5 +1,8 @@
 """Test le bilan comptable."""
 
+import pandas as pd
+import pytest
+
 from expenses._statement import compute_statement
 from expenses.expense import Expense
 
@@ -23,3 +26,21 @@ def test_format(expense_list: list[Expense], weights: dict) -> None:
         *({expense.who_paid} | set(expense.who_for) for expense in expense_list)
     )
     assert set(statement.index) == members
+
+
+def test_a_paye(expense_list: list[Expense], weights: dict) -> None:
+    """
+    Teste la cohérence de la colonne 'a payé'.
+
+    La somme des paiement doit être égale à la somme des dépenses engagées.
+    """
+    total_expense = sum(expense.amount for expense in expense_list)
+    statement = compute_statement(expense_list, weights=weights)
+
+    assert statement["a payé"].sum() == total_expense
+
+
+@pytest.fixture
+def weights(weights: pd.DataFrame) -> dict:
+    """Convertis le DataFrame de poids en dict."""
+    return weights.to_dict()
