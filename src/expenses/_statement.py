@@ -38,8 +38,11 @@ def compute_statement(
         Un DataFrame représentant le bilan.
     """
 
-    paiements = {}
-    debts = {}
+    paiements: dict[str, float] = {}
+    debts: dict[str, float] = {}
+
+    labels = {expense.label for expense in expenses if expense.label}
+    debts_per_label: dict[str, dict[str, float]] = {label: {} for label in labels}
 
     for expense in expenses:
         paiements[expense.who_paid] = (
@@ -50,7 +53,7 @@ def compute_statement(
         total_weight = sum(expense_weights.values(), start=0)
 
         # Assure que le "who_for" est aligné avec les poids
-        if expense.label is not None:
+        if expense.label:
             who_for = list(expense_weights.keys())
         else:
             who_for = expense.who_for
@@ -59,6 +62,12 @@ def compute_statement(
             debt = expense.amount * expense_weights.get(member, 0) / total_weight
             debts[member] = debts.get(member, 0) + debt
 
+            if expense.label:
+                debts_for_this_label = debts_per_label[expense.label]
+                debts_for_this_label[member] = (
+                    debts_for_this_label.get(member, 0) + debt
+                )
+
     statement = pd.DataFrame(
         {
             _Statement.paid: pd.Series(paiements),
@@ -66,14 +75,13 @@ def compute_statement(
         }
     )
 
-    labels = {expense.label for expense in expenses}
-    for label in labels:
-        statement[f"{_Statement.expenses} {label}"] = 0
+    for label, debts in debts_per_label.items():
+        statement[f"{_Statement.expenses} {label}"] = pd.Series(debts)
 
     statement[_Statement.total] = (
         statement[_Statement.paid] - statement[_Statement.expenses]
     )
-    return statement
+    return statement.fillna(0)
 
 
 class _Statement(enum.StrEnum):

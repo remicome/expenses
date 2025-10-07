@@ -16,7 +16,7 @@ def test_format(expense_list: list[Expense], weights: dict) -> None:
     """
     statement = compute_statement(expense_list, weights=weights)
 
-    labels = {expense.label for expense in expense_list}
+    labels = {expense.label for expense in expense_list if expense.label}
     expected_columns = {"a payé", "dépenses", "bilan"} | {
         f"dépenses {label}" for label in labels
     }
@@ -50,6 +50,23 @@ def test_depenses(expense_list: list[Expense], weights: dict) -> None:
     statement = compute_statement(expense_list, weights=weights)
 
     assert statement["dépenses"].sum() == total_expense
+
+
+def test_depenses_par_label(expense_list: list[Expense], weights: dict) -> None:
+    """
+    Teste la cohérence des colonnes de dépenses par label.
+
+    La somme des dépenses doit être égale à la somme des dépenses engagées pour chaque
+    label.
+    """
+    labels = {expense.label for expense in expense_list if expense.label}
+    statement = compute_statement(expense_list, weights=weights)
+
+    for label in labels:
+        total_expense = sum(
+            expense.amount for expense in expense_list if expense.label == label
+        )
+        assert statement[f"dépenses {label}"].sum().round(2) == total_expense
 
 
 def test_bilan(expense_list: list[Expense], weights: dict) -> None:
