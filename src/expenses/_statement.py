@@ -48,8 +48,14 @@ def compute_statement(
 
         expense_weights = _weights_for_label(expense, weights=weights)
         total_weight = sum(expense_weights.values(), start=0)
-        for member in expense.who_for:
-            # La somme engagée est divisée équitablement entre les membres impliqués
+
+        # Assure que le "who_for" est aligné avec les poids
+        if expense.label is not None:
+            who_for = list(expense_weights.keys())
+        else:
+            who_for = expense.who_for
+
+        for member in who_for:
             debt = expense.amount * expense_weights.get(member, 0) / total_weight
             debts[member] = debts.get(member, 0) + debt
 
