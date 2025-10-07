@@ -78,10 +78,12 @@ def compute_statement(
     for label, debts in debts_per_label.items():
         statement[f"{_Statement.expenses} {label}"] = pd.Series(debts)
 
+    statement = statement.fillna(0)
+
     statement[_Statement.total] = (
         statement[_Statement.paid] - statement[_Statement.expenses]
     )
-    return statement.fillna(0)
+    return statement
 
 
 class _Statement(enum.StrEnum):
