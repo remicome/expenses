@@ -70,7 +70,9 @@ def compute_statement(
     for label in labels:
         statement[f"{_Statement.expenses} {label}"] = 0
 
-    statement[_Statement.total] = 0
+    statement[_Statement.total] = (
+        statement[_Statement.paid] - statement[_Statement.expenses]
+    )
     return statement
 
 
