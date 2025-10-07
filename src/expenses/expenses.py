@@ -10,7 +10,8 @@ import typing
 import pandas as pd
 
 from ._ihatemoney import read_ihatemoney_csv
-from ._settle import individual_statements, settle
+from ._settle import settle
+from ._statement import compute_statement
 from .expense import Expense
 
 
@@ -93,8 +94,7 @@ class Expenses:
             le membre doit de l'argent au groupe ; s'il est positif, le groupe lui doit
             de l'argent.
         """
-        statement = individual_statements(self.expenses, weights=self.weights)
-        statement = pd.Series(statement)
+        statement = compute_statement(self.expenses, weights=self.weights)
         return statement.sort_index()
 
     def with_weights(self, path: os.PathLike) -> Expenses:

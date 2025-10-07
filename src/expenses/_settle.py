@@ -4,6 +4,7 @@ import enum
 
 import pandas as pd
 
+from ._statement import compute_statement
 from .expense import Expense
 
 
@@ -91,22 +92,8 @@ def individual_statements(
     Returns:
         Un dictionnaire donnant la dette pour chaque membre du groupe.
     """
-    statements: dict[str, float] = {}
-    weights = weights if weights else {}
-
-    for expense in expenses:
-        statements[expense.who_paid] = (
-            statements.get(expense.who_paid, 0) + expense.amount
-        )
-
-        expense_weights = _weights_for_label(expense, weights=weights)
-        total_weight = sum(expense_weights.values(), start=0)
-        for member in expense.who_for:
-            # La somme engagée est divisée équitablement entre les membres impliqués
-            debt = expense.amount * expense_weights.get(member, 0) / total_weight
-            statements[member] = statements.get(member, 0) - debt
-
-    return statements
+    complete_statement = compute_statement(expenses, weights=weights)
+    return complete_statement["bilan"].to_dict()
 
 
 def _weights_for_label(expense: Expense, weights: dict) -> dict:
