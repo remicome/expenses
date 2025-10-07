@@ -1,5 +1,10 @@
 # Gestion des dépenses entre amis
 
+![Build and test](https://github.com/remicome/expenses/actions/workflows/build_and_test.yml/badge.svg)
+
+Un gestionnaire de dépenses de groupes avec des options avancées de
+répartitions.
+
 ```python
 from expense import Expenses
 
