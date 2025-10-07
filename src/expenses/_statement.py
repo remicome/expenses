@@ -76,7 +76,7 @@ def compute_statement(
     )
 
     for label, debts in debts_per_label.items():
-        statement[f"{_Statement.expenses} {label}"] = pd.Series(debts)
+        statement[f"dont {label}"] = pd.Series(debts)
 
     statement = statement.fillna(0)
 
