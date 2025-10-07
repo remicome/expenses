@@ -1,4 +1,4 @@
-# Gestion des dépenses entre amis
+# Gestion de dépenses entre amis
 
 ![Build and test](https://github.com/remicome/expenses/actions/workflows/build_and_test.yml/badge.svg)
 
