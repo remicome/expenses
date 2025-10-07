@@ -77,7 +77,7 @@ def test_statement() -> None:
     """
     Teste l'interface calculant le bilan.
 
-    La fonction settle doit retourner une série non-nulle dont les valeurs sommes à
+    La fonction statement doit retourner une série non-nulle dont les valeurs sommes à
     zéro.
     """
     expenses = Expenses()
@@ -89,7 +89,7 @@ def test_statement() -> None:
     statement = expenses.statement()
 
     assert len(statement) > 0
-    assert statement.sum() == 0
+    assert statement["bilan"].sum() == 0
 
 
 def test_settlement_no_expense() -> None:
